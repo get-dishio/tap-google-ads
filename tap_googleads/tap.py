@@ -82,17 +82,17 @@ class TapGoogleAds(Tap):
         th.Property(
             "login_customer_id",
             CUSTOMER_ID_TYPE,
-            description="Value to use in the login-customer-id header if using a manager customer account. See https://developers.google.com/search-ads/reporting/concepts/login-customer-id for more info.",
+            description="Manager account ID (MCC). If provided alone, tap will sync all accessible accounts (federated mode).",
         ),
         th.Property(
-            "customer_ids",
-            CUSTOMER_ID_TYPE,
-            description="Comma seperated string. Get data for the provided customers only, rather than all accessible customers. Takes precedence over `customer_id`.",
-        ),
-        th.Property(
-            "customer_id",
-            CUSTOMER_ID_TYPE,
-            description="Get data for the provided customer only, rather than all accessible customers. Superseeded by `customer_ids`.",
+            "locations",
+            th.ArrayType(
+                th.ObjectType(
+                    th.Property("id", th.StringType, required=True, description="Google Ads customer ID"),
+                    th.Property("name", th.StringType, required=False, description="[Optional] Name for reference only; not used by the tap."),
+                )
+            ),
+            description="Array of locations with 'id' (Google Ads customer ID, required) and optional 'name' for reference. When present, the tap extracts customer IDs from each element's 'id'.",
         ),
         th.Property(
             "start_date",

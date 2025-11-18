@@ -68,7 +68,7 @@ class CustomerHierarchyStream(GoogleAdsStream):
     This query retrieves all 1-degree subaccounts given a manager account's subaccounts. Subaccounts can be either managers or clients.
     
     This stream spawns child streams only for customers that are active clients (not managers).
-    If a `customer_ids` config is provided, only the customers in the list (or their children) will be synced.
+    If a locations[] config is provided, only customers in that list (or their children) will be synced.
     """
 
 

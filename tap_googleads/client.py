@@ -37,11 +37,13 @@ class GoogleAdsStream(RESTStream):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.config.get("customer_id"):
-            self._config["customer_ids"] = [_sanitise_customer_id(self.config.get("customer_id"))]
-        elif self.config.get("customer_ids"):
-            raw_customer_ids = self.config.get("customer_ids").split(",")
-            self._config["customer_ids"] = list(map(_sanitise_customer_id, raw_customer_ids))
+        if self.config.get("locations"):
+            self._config["customer_ids"] = [
+                _sanitise_customer_id(loc.get("id"))
+                for loc in self.config.get("locations", [])
+                if "id" in loc and loc.get("id")
+            ]
+        # No more support for customer_id / customer_ids legacy options.
 
     def response_error_message(self, response: requests.Response) -> str:
         """Build error message for invalid http statuses.
@@ -167,15 +169,15 @@ class GoogleAdsStream(RESTStream):
 
     @cached_property
     def customer_ids(self):
-        customer_ids = self.config.get("customer_ids")
-        customer_id = self.config.get("customer_id")
-
-        if customer_ids is None:
-            if customer_id is None:
-                return
-            customer_ids = [customer_id]
-
-        return list(map(_sanitise_customer_id, customer_ids))
+        # Only support locations[].id. If not present, return None (federated mode or all accessible accounts).
+        if self.config.get("locations"):
+            ids = [
+                _sanitise_customer_id(loc.get("id"))
+                for loc in self.config.get("locations", [])
+                if "id" in loc and loc.get("id")
+            ]
+            return ids if ids else None
+        return None
 
     @cached_property
     def login_customer_id(self):

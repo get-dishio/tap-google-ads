@@ -31,9 +31,10 @@ plugins:
       kind: string
       sensitive: true
     - name: login_customer_id
-    - name: customer_id
-    - name: customer_ids
+    - name: locations
       kind: array
+      description: >
+        Array of objects for explicit account sync: [{"id": "1234567890", "name": "Optional name, ignored"}]
     - name: start_date
       kind: date_iso8601
     - name: end_date
