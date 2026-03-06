@@ -300,17 +300,22 @@ class ClickViewReportStream(ReportsStream):
 
 
 class CampaignsStream(ReportsStream):
-    """Define custom stream."""
-
+    """Campaign metadata."""
 
     def gaql(self, context=None):
         return """
-        SELECT campaign.id, campaign.name FROM campaign ORDER BY campaign.id
+        SELECT
+            campaign.id,
+            campaign.name,
+            campaign.resource_name,
+            campaign.status
+        FROM campaign
+        ORDER BY campaign.id
         """
 
     records_jsonpath = "$.results[*]"
     name = "stream_campaign"
-    primary_keys = ["campaign__id"]
+    primary_keys = ["customer_id", "campaign__id"]
     replication_key = None
     schema_filepath = SCHEMAS_DIR / "campaign.json"
 
@@ -378,25 +383,87 @@ class AdGroupsPerformance(ReportsStream):
 
 
 class CampaignPerformance(ReportsStream):
-    """Campaign Performance"""
-
+    """Campaign daily performance incl. store visits."""
 
     def gaql(self, context=None):
         return f"""
-    SELECT campaign.name, campaign.status, segments.device, segments.date, metrics.impressions, metrics.clicks, metrics.ctr, metrics.average_cpc, metrics.cost_micros FROM campaign WHERE segments.date >= {self.start_date(context)} and segments.date <= {self.end_date}
-    """
+        SELECT
+            campaign.id,
+            campaign.name,
+            campaign.resource_name,
+            campaign.status,
+            segments.device,
+            segments.date,
+            metrics.impressions,
+            metrics.clicks,
+            metrics.ctr,
+            metrics.average_cpc,
+            metrics.cost_micros,
+            metrics.all_conversions_from_store_visit
+        FROM campaign
+        WHERE segments.date >= {self.start_date(context)}
+          and segments.date <= {self.end_date}
+        """
 
     records_jsonpath = "$.results[*]"
     name = "stream_campaign_performance"
     primary_keys = [
-        "campaign__name",
-        "campaign__status",
+        "customer_id",
+        "campaign__id",
         "segments__date",
         "segments__device",
     ]
-    
     schema_filepath = SCHEMAS_DIR / "campaign_performance.json"
 
+class CampaignConversionActionPerformance(ReportsStream):
+    """Campaign daily performance segmented by conversion action."""
+
+    def gaql(self, context=None):
+        return f"""
+        SELECT
+            campaign.id,
+            campaign.name,
+            campaign.resource_name,
+            campaign.status,
+            segments.date,
+            segments.conversion_action,
+            metrics.all_conversions
+        FROM campaign
+        WHERE segments.date >= {self.start_date(context)}
+          and segments.date <= {self.end_date}
+        """
+
+    records_jsonpath = "$.results[*]"
+    name = "stream_campaign_conversion_action_performance"
+    primary_keys = [
+        "customer_id",
+        "campaign__id",
+        "segments__date",
+        "segments__conversionAction",
+    ]
+    schema_filepath = SCHEMAS_DIR / "campaign_conversion_action_performance.json"
+
+class ConversionActionsStream(ReportsStream):
+    """Conversion action metadata."""
+
+    def gaql(self, context=None):
+        return """
+        SELECT
+            conversion_action.id,
+            conversion_action.resource_name,
+            conversion_action.name,
+            conversion_action.status,
+            conversion_action.category,
+            conversion_action.type,
+            conversion_action.primary_for_goal
+        FROM conversion_action
+        """
+
+    records_jsonpath = "$.results[*]"
+    name = "stream_conversion_action"
+    primary_keys = ["customer_id", "conversionAction__id"]
+    replication_key = None
+    schema_filepath = SCHEMAS_DIR / "conversion_action.json"
 
 class CampaignPerformanceByAgeRangeAndDevice(ReportsStream):
     """Campaign Performance By Age Range and Device"""

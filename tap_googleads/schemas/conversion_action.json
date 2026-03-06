@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "properties": {
+    "customer_id": {
+      "type": ["string", "null"]
+    },
+    "conversionAction__id": {
+      "type": ["string", "null"]
+    },
+    "conversionAction__resourceName": {
+      "type": ["string", "null"]
+    },
+    "conversionAction__name": {
+      "type": ["string", "null"]
+    },
+    "conversionAction__status": {
+      "type": ["string", "null"]
+    },
+    "conversionAction__category": {
+      "type": ["string", "null"]
+    },
+    "conversionAction__type": {
+      "type": ["string", "null"]
+    },
+    "conversionAction__primaryForGoal": {
+      "type": ["boolean", "null"]
+    }
+  }
+}

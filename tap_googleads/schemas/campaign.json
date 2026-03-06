@@ -1,17 +1,20 @@
 {
-    "type": "object",
-    "properties": {
-        "customer_id": {
-            "type": ["string", "null"]
-        },
-        "campaign__resourceName": {
-            "type": ["string", "null"]
-        },
-        "campaign__name": {
-            "type": ["string", "null"]
-        },
-        "campaign__id": {
-            "type": ["string", "null"]
-        }
+  "type": "object",
+  "properties": {
+    "customer_id": {
+      "type": ["string", "null"]
+    },
+    "campaign__resourceName": {
+      "type": ["string", "null"]
+    },
+    "campaign__name": {
+      "type": ["string", "null"]
+    },
+    "campaign__id": {
+      "type": ["string", "null"]
+    },
+    "campaign__status": {
+      "type": ["string", "null"]
     }
+  }
 }
